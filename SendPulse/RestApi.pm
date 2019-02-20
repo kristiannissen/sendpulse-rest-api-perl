@@ -12,7 +12,9 @@ sub new {
         grant_type => $param{'grant_type'} //= 'client_credentials',
         client_id => $param{'client_id'},
         client_secret => $param{'client_secret'},
-        token => ''
+        token => '',
+        expires_in => 3600,
+        'token_type' => 'Bearer'
     };
 
     bless $this, $type;
