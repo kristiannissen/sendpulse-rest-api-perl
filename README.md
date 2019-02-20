@@ -9,3 +9,4 @@ where hello is client_id and kitty is client_secret
 
 Resources
 http://www.perltutorial.org/perl-oop/
+http://perlcritic.com/critique/paste

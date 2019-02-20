@@ -7,6 +7,7 @@ use Carp qw(carp croak); # https://perldoc.perl.org/Carp.html
 
 sub new {
     my ($class, %args) = @_;
+
     my $this = bless {
         grant_type => $args{'grant_type'} //= 'client_credentials',
         client_id => $args{'client_id'},
