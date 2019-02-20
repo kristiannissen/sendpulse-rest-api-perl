@@ -14,7 +14,7 @@ sub new {
         client_secret => $param{'client_secret'},
         token => '',
         expires_in => 3600,
-        'token_type' => 'Bearer'
+        token_type => 'Bearer'
     };
 
     bless $this, $type;
