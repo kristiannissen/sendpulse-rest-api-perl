@@ -4,6 +4,10 @@ use strict;
 use warnings;
 use 5.10.0;
 use Carp qw(carp croak); # https://perldoc.perl.org/Carp.html
+use HTTP::Request::Common qw(GET POST);
+use LWP;
+use JSON;
+use Data::Dumper;
 
 sub new {
     my ($class, %args) = @_;
@@ -14,18 +18,35 @@ sub new {
         client_secret => $args{'client_secret'},
         token => '',
         expires_in => 3600,
-        token_type => 'Bearer'
+        token_type => 'Bearer',
+        ua => LWP::UserAgent->new
     }, $class;
 
-    $this->{token} = $this->request_token() unless $this->{token};
+    $this->request_token() unless $this->{token};
 
     return $this;
 }
 # Request Authorization token
 # If SendPulse throws an error pass that using croak
 sub request_token {
-    my $this = @_;
-    return "Hello Token";
+    my ($this) = @_;
+
+    my $request = POST "https://api.sendpulse.com/oauth/access_token", [
+        "grant_type" => $this->{grant_type},
+        "client_id" => $this->{client_id},
+        "client_secret" => $this->{client_secret}
+    ];
+
+    my $response = $this->{ua}->request($request);
+    my $json_auth = decode_json($response->content);
+
+    if ($json_auth->{error_code}) {
+        croak($json_auth->{error_description} ." ". $json_auth->{message});
+    } else {
+        $this->{token} = $json_auth->{access_token};
+        $this->{token_type} = $json_auth->{token_type};
+        $this->{expires} = $json_auth->{expires_in};
+    }
 }
 # Send email to list of recipients
 sub send_email {
