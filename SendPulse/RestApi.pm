@@ -7,6 +7,8 @@ use Carp qw(carp croak); # https://perldoc.perl.org/Carp.html
 use HTTP::Request::Common qw(GET POST);
 use LWP;
 use JSON;
+use MIME::Base64;
+
 use Data::Dumper;
 
 sub new {
@@ -27,7 +29,6 @@ sub new {
     return $this;
 }
 # Request Authorization token
-# If SendPulse throws an error pass that using croak
 sub request_token {
     my ($this) = @_;
 
@@ -49,8 +50,23 @@ sub request_token {
     }
 }
 # Send email to list of recipients
-sub send_email {
-    my ($self, %email_data) = @_;
+sub send_emails {
+    my ($this, %email_data) = @_;
+
+    carp "No email data passed" unless %email_data;
+
+    my $request = POST "https://api.sendpulse.com/smtp/emails", [
+        "email" => encode_json(\%email_data)
+    ];
+    my $token_header = $this->{token_type} ." ". $this->{token};
+    $request->header("Authorization", $token_header);
+
+    my $response = $this->{ua}->request($request);
+    my $json_content = decode_json($response->content);
+
+    croak($json_content->{error_description}) if $json_content->{error};
+
+    return $json_content->{result};
 }
 
 1;
