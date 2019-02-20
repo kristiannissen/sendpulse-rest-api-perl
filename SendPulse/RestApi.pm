@@ -6,29 +6,28 @@ use 5.10.0;
 use Carp qw(carp croak); # https://perldoc.perl.org/Carp.html
 
 sub new {
-    my $type = shift;
-    my %param = @_;
-    my $this = {
-        grant_type => $param{'grant_type'} //= 'client_credentials',
-        client_id => $param{'client_id'},
-        client_secret => $param{'client_secret'},
+    my ($class, %args) = @_;
+    my $this = bless {
+        grant_type => $args{'grant_type'} //= 'client_credentials',
+        client_id => $args{'client_id'},
+        client_secret => $args{'client_secret'},
         token => '',
         expires_in => 3600,
         token_type => 'Bearer'
-    };
+    }, $class;
 
-    bless $this, $type;
-    $this->{token} = $this->requestToken() unless $this->{token};
+    $this->{token} = $this->request_token() unless $this->{token};
 
     return $this;
 }
 # Request Authorization token
-sub requestToken {
-    my $self = @_;
-    return "the super token";
+# If SendPulse throws an error pass that using croak
+sub request_token {
+    my $this = @_;
+    return "Hello Token";
 }
-
-sub sendEmail {
+# Send email to list of recipients
+sub send_email {
     my ($self, %email_data) = @_;
 }
 
