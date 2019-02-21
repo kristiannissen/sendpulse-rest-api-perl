@@ -36,12 +36,37 @@ dies_ok {$api->make_request("https://api.sendpulse.com/oauth/access_token", [])}
 
 # Test correct credentials
 lives_ok {$api->make_request("https://api.sendpulse.com/oauth/access_token", [
-                "client_id" => "",
-                "client_secret" => ""
+                "client_id" => $client_id,
+                "client_secret" => $client_secret,
+                "grant_type" => "client_credentials"
         ])} "Test Authorized";
 
 # Test Authorization token
-dies_ok {$api->request_token()} "Request Authorization token";
+# Pass is wrong secret
+$api->client_secret("HelloKitty");
+dies_ok {$api->request_token()} "Wrong Request Authorization token";
+
+# Change to corret secret
+$api->client_secret($client_secret);
+lives_ok {$api->request_token()} "Correct Request Authorization token";
+
+# Test send_emails
+
+my %email_data = (
+    "html" => "Hello Kitty in rich html",
+    "text" => "Hello Kitty in plain text",
+    "subject" => "Hello from the Kitty",
+    "from" => {
+        "name" => "Kitty",
+        "email" => 'formand@espegaarden.dk'
+    },
+    "to" => [
+        {"email" => 'kristian.nissen@gmail.com',},
+        {"email" => 'kn@unisport.dk'}
+    ]
+);
+
+lives_ok {$api->send_emails(%email_data)} "Correct email data";
 
 # Done testing
 done_testing();

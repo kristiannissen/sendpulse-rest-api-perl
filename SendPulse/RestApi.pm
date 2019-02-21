@@ -8,8 +8,11 @@ use HTTP::Request::Common qw(GET POST);
 use LWP;
 use JSON;
 use MIME::Base64;
+use Log::Log4perl qw(:easy);
 
 use Data::Dumper;
+
+Log::Log4perl->easy_init($DEBUG);
 
 sub new {
     my ($class, %args) = @_;
@@ -45,13 +48,18 @@ sub client_secret {
         return $this->{client_secret};
     }
 }
-
 # Make request to the API endpoint
 # this->make_request(URL, []);
 sub make_request {
     my ($this, $url, @params) = @_;
 
     my $request = POST $url, @params;
+
+    # Use the token if it exists
+    $request->header("Authorization" => 
+        $this->{token_type} ." ". $this->{token}
+    ) if ($this->{token});
+
     my $response = $this->{ua}->request($request);
 
     die($response->message) unless $response->is_success;
@@ -65,40 +73,34 @@ sub make_request {
 sub request_token {
     my ($this) = @_;
 
-    if ($this->{expires_in} lt 3600) {
-        my $json_auth = decode_json($this->make_request("https://api.sendpulse.com/oauth/access_token", [
-            "grant_type" => $this->{grant_type},
-            "client_id" => $this->{client_id},
-            "client_secret" => $this->{client_secret}
-        ]));
+    my $json_auth = $this->make_request("https://api.sendpulse.com/oauth/access_token", [
+        "grant_type" => $this->{grant_type},
+        "client_id" => $this->{client_id},
+        "client_secret" => $this->{client_secret}
+    ]);
 
-        if ($json_auth->{error}) {
-            die("Something went wrong! ". $json_auth->{error_description});
-        } else {
-            $this->{token} = $json_auth->{access_token};
-            $this->{token_type} = $json_auth->{token_type};
-            $this->{expires} = $json_auth->{expires_in};
-        }
+    if ($json_auth->{error}) {
+        die("Something went wrong! ". $json_auth->{error_description});
+    } else {
+        $this->{token} = $json_auth->{access_token};
+        $this->{token_type} = $json_auth->{token_type};
+        $this->{expires} = $json_auth->{expires_in};
     }
 }
 # Send email to list of recipients
 sub send_emails {
     my ($this, %email_data) = @_;
+    # Make sure the required keys are in the hash
+    die ("Missing key") unless grep (/(html|text|subject|from|go)/o, keys %email_data);
 
-    die "No email data passed" unless %email_data;
+    # Turn html into base64 string
+    $email_data{"html"} = encode_base64($email_data{"html"});
 
-    my $request = POST "https://api.sendpulse.com/smtp/emails", [
-        "email" => encode_json(\%email_data)
-    ];
-    my $token_header = $this->{token_type} ." ". $this->{token};
-    $request->header("Authorization", $token_header);
+    my $json_response = $this->make_request("https://api.sendpulse.com/smtp/emails", [
+            "email" => encode_json(\%email_data)
+        ]);
 
-    my $response = $this->{ua}->request($request);
-    my $json_content = decode_json($response->content);
-
-    croak($json_content->{error_description}) if $json_content->{error};
-
-    return $json_content->{result};
+    return "Hello";
 }
 
 1;
