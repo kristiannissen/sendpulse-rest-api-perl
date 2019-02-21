@@ -89,6 +89,7 @@ sub request_token {
 # Send email to list of recipients
 sub send_emails {
     my ($this, %email_data) = @_;
+
     # Make sure the required keys are in the hash
     die ("Missing key") unless grep (/(html|text|subject|from|go)/o, keys %email_data);
 
