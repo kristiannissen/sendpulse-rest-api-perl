@@ -11,7 +11,7 @@ use lib "$Bin/../";
 
 use Test::More;
 use Test::Output;
-use Test::Carp;
+use Test::Exception;
 
 use Data::Dumper;
 
@@ -25,22 +25,23 @@ my $api = SendPulse::RestApi->new(
         client_id => $client_id
     );
 
+# Property assigning
+ok ($api->client_id eq $client_id, "Assign client id");
+
+ok ($api->client_secret eq $client_secret, "Assign client secret");
+
+
 # Test wrong credentials
-does_carp ($api->make_request("https://api.sendpulse.com/oauth/access_token", []));
+dies_ok {$api->make_request("https://api.sendpulse.com/oauth/access_token", [])} "Test Unauthorized";
 
-# Test that we can get a token
-# does_carp ($api->request_token());
+# Test correct credentials
+lives_ok {$api->make_request("https://api.sendpulse.com/oauth/access_token", [
+                "client_id" => "",
+                "client_secret" => ""
+        ])} "Test Authorized";
 
-# Test if no or empty data is passed
-my %email_data = ();
-
-# $api->send_emails(%email_data);
-
-%email_data = (
-    "html" => "<p>Hello Kitty</p>"
-);
-
-# ok($api->send_emails(%email_data) eq "hello", "Testing send emails");
+# Test Authorization token
+dies_ok {$api->request_token()} "Request Authorization token";
 
 # Done testing
 done_testing();

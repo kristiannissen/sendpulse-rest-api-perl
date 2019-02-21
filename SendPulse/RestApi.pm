@@ -19,7 +19,7 @@ sub new {
         client_id => $args{'client_id'},
         client_secret => $args{'client_secret'},
         token => '',
-        expires_in => 3600,
+        expires_in => 0,
         token_type => 'Bearer',
         ua => undef
     }, $class;
@@ -28,6 +28,24 @@ sub new {
 
     return $this;
 }
+# Magic getter/setter methods
+sub client_id {
+    my ($this, $id) = @_;
+    if ($id) {
+        $this->{client_id} = $id;
+    } else {
+        return $this->{client_id};
+    }
+}
+sub client_secret {
+    my ($this, $secret) = @_;
+    if ($secret) {
+        $this->{client_secret} = $secret;
+    } else {
+        return $this->{client_secret};
+    }
+}
+
 # Make request to the API endpoint
 # this->make_request(URL, []);
 sub make_request {
@@ -36,35 +54,38 @@ sub make_request {
     my $request = POST $url, @params;
     my $response = $this->{ua}->request($request);
 
-    carp($response->message) unless $response->is_success;
+    die($response->message) unless $response->is_success;
 
     # Return decoded json content
     decode_json($response->content);
 }
 
 # Request Authorization token
+# If there is already a request token don't request a new one
 sub request_token {
     my ($this) = @_;
 
-    my $json_auth = decode_json($this->make_request("https://api.sendpulse.com/oauth/access_token", [
-        "grant_type" => $this->{grant_type},
-        "client_id" => $this->{client_id},
-        "client_secret" => $this->{client_secret}
-    ]));
+    if ($this->{expires_in} lt 3600) {
+        my $json_auth = decode_json($this->make_request("https://api.sendpulse.com/oauth/access_token", [
+            "grant_type" => $this->{grant_type},
+            "client_id" => $this->{client_id},
+            "client_secret" => $this->{client_secret}
+        ]));
 
-    if ($json_auth->{error}) {
-        carp("Something went wrong! ". $json_auth->{error_description});
-    } else {
-        $this->{token} = $json_auth->{access_token};
-        $this->{token_type} = $json_auth->{token_type};
-        $this->{expires} = $json_auth->{expires_in};
+        if ($json_auth->{error}) {
+            die("Something went wrong! ". $json_auth->{error_description});
+        } else {
+            $this->{token} = $json_auth->{access_token};
+            $this->{token_type} = $json_auth->{token_type};
+            $this->{expires} = $json_auth->{expires_in};
+        }
     }
 }
 # Send email to list of recipients
 sub send_emails {
     my ($this, %email_data) = @_;
 
-    carp "No email data passed" unless %email_data;
+    die "No email data passed" unless %email_data;
 
     my $request = POST "https://api.sendpulse.com/smtp/emails", [
         "email" => encode_json(\%email_data)
