@@ -52,8 +52,8 @@ sub request_token {
         "client_secret" => $this->{client_secret}
     ]));
 
-    if ($json_auth->{error_code}) {
-        croak($json_auth->{error_description} ." ". $json_auth->{message});
+    if ($json_auth->{error}) {
+        carp("Something went wrong! ". $json_auth->{error_description});
     } else {
         $this->{token} = $json_auth->{access_token};
         $this->{token_type} = $json_auth->{token_type};

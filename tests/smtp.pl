@@ -11,7 +11,7 @@ use lib "$Bin/../";
 
 use Test::More;
 use Test::Output;
-use Test::Exception;
+use Test::Carp;
 
 use Data::Dumper;
 
@@ -26,7 +26,10 @@ my $api = SendPulse::RestApi->new(
     );
 
 # Test wrong credentials
-throws_ok {$api->make_request("https://api.sendpulse.com/oauth/access_token", [])} qr/unauthorized/, "Unauthorized";
+does_carp ($api->make_request("https://api.sendpulse.com/oauth/access_token", []));
+
+# Test that we can get a token
+# does_carp ($api->request_token());
 
 # Test if no or empty data is passed
 my %email_data = ();
