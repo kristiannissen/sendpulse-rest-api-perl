@@ -21,25 +21,36 @@ sub new {
         token => '',
         expires_in => 3600,
         token_type => 'Bearer',
-        ua => LWP::UserAgent->new
+        ua => undef
     }, $class;
 
-    $this->request_token() unless $this->{token};
+    $this->{ua} = LWP::UserAgent->new unless $this->{ua};
 
     return $this;
 }
+# Make request to the API endpoint
+# this->make_request(URL, []);
+sub make_request {
+    my ($this, $url, @params) = @_;
+
+    my $request = POST $url, @params;
+    my $response = $this->{ua}->request($request);
+
+    carp($response->message) unless $response->is_success;
+
+    # Return decoded json content
+    decode_json($response->content);
+}
+
 # Request Authorization token
 sub request_token {
     my ($this) = @_;
 
-    my $request = POST "https://api.sendpulse.com/oauth/access_token", [
+    my $json_auth = decode_json($this->make_request("https://api.sendpulse.com/oauth/access_token", [
         "grant_type" => $this->{grant_type},
         "client_id" => $this->{client_id},
         "client_secret" => $this->{client_secret}
-    ];
-
-    my $response = $this->{ua}->request($request);
-    my $json_auth = decode_json($response->content);
+    ]));
 
     if ($json_auth->{error_code}) {
         croak($json_auth->{error_description} ." ". $json_auth->{message});

@@ -11,6 +11,7 @@ use lib "$Bin/../";
 
 use Test::More;
 use Test::Output;
+use Test::Exception;
 
 use Data::Dumper;
 
@@ -24,18 +25,19 @@ my $api = SendPulse::RestApi->new(
         client_id => $client_id
     );
 
-# dies_ok{$api->request_token()} "API authentication error";
+# Test wrong credentials
+throws_ok {$api->make_request("https://api.sendpulse.com/oauth/access_token", [])} qr/unauthorized/, "Unauthorized";
 
 # Test if no or empty data is passed
 my %email_data = ();
 
-$api->send_emails(%email_data);
+# $api->send_emails(%email_data);
 
 %email_data = (
     "html" => "<p>Hello Kitty</p>"
 );
 
-ok($api->send_emails(%email_data) eq "hello", "Testing send emails");
+# ok($api->send_emails(%email_data) eq "hello", "Testing send emails");
 
 # Done testing
 done_testing();
