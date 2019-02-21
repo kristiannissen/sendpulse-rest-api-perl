@@ -67,7 +67,6 @@ sub make_request {
     # Return decoded json content
     decode_json($response->content);
 }
-
 # Request Authorization token
 # If there is already a request token don't request a new one
 sub request_token {
@@ -100,7 +99,8 @@ sub send_emails {
             "email" => encode_json(\%email_data)
         ]);
 
-    return "Hello";
+    # Return result
+    $json_response->{result};
 }
 
 1;

@@ -66,7 +66,7 @@ my %email_data = (
     ]
 );
 
-lives_ok {$api->send_emails(%email_data)} "Correct email data";
+ok $api->send_emails(%email_data) eq 1, "Email data succes";
 
 # Done testing
 done_testing();
