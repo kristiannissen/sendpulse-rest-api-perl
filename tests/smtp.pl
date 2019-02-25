@@ -30,9 +30,9 @@ ok ($api->client_id eq $client_id, "Assign client id");
 
 ok ($api->client_secret eq $client_secret, "Assign client secret");
 
-
 # Test wrong credentials
 my $error = $api->make_request("https://api.sendpulse.com/oauth/access_token", []);
+
 ok ($error->{error_code} eq 1, "Test Unauthorized");
 
 # Test correct credentials
@@ -41,7 +41,8 @@ my $success = $api->make_request("https://api.sendpulse.com/oauth/access_token",
                 "client_secret" => $client_secret,
                 "grant_type" => "client_credentials"
         ]);
-# ok ($success->{} eq "200", "Test Authorized");
+    # say Dumper $success;
+    # ok ($success eq "200", "Test Authorized");
 
 # Test Authorization token
 # Pass is wrong secret
