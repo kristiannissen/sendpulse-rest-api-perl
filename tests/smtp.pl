@@ -41,8 +41,8 @@ my $success = $api->make_request("https://api.sendpulse.com/oauth/access_token",
                 "client_secret" => $client_secret,
                 "grant_type" => "client_credentials"
         ]);
-    # say Dumper $success;
-    # ok ($success eq "200", "Test Authorized");
+
+ok ($success eq "200", "Test Authorized");
 
 # Test Authorization token
 # Pass is wrong secret
