@@ -79,13 +79,13 @@ sub request_token {
         "client_secret" => $this->{client_secret}
     ]);
 
-    if ($json_auth->{error}) {
-        die("Something went wrong! ". $json_auth->{error_description});
-    } else {
-        $this->{token} = $json_auth->{access_token};
-        $this->{token_type} = $json_auth->{token_type};
-        $this->{expires} = $json_auth->{expires_in};
-    }
+    return 0 if $json_auth->{error};
+
+    $this->{token} = $json_auth->{access_token};
+    $this->{token_type} = $json_auth->{token_type};
+    $this->{expires} = $json_auth->{expires_in};
+
+    return 1;
 }
 # Send email to list of recipients
 sub send_emails {
