@@ -54,6 +54,7 @@ sub make_request {
     my ($this, $url, @params) = @_;
 
     my $request = POST $url, @params;
+    my %json_response = ();
 
     # Use the token if it exists
     $request->header("Authorization" => 
@@ -62,10 +63,7 @@ sub make_request {
 
     my $response = $this->{ua}->request($request);
 
-    die($response->message) unless $response->is_success;
-
-    # Return decoded json content
-    decode_json($response->content);
+    return decode_json($response->content);
 }
 # Request Authorization token
 # If there is already a request token don't request a new one
