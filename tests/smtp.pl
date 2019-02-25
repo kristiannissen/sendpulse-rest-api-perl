@@ -58,7 +58,6 @@ ok ($api->request_token() eq 1, "Correct Request Authorization token");
 # Test send_emails
 
 my %email_data = (
-    "html" => "Hello Kitty in rich html",
     "text" => "Hello Kitty in plain text",
     "subject" => "Hello from the Kitty",
     "from" => {
