@@ -98,7 +98,7 @@ sub send_emails {
         }) unless grep (/(html|text|subject|from|go)/o, keys %email_data);
 
     # Turn html into base64 string
-    $email_data{"html"} = encode_base64($email_data{"html"});
+    # $email_data{"html"} = encode_base64($email_data{"html"});
 
     #    my $json_response = $this->make_request("https://api.sendpulse.com/smtp/emails", [
     #        "email" => encode_json(\%email_data)
@@ -106,6 +106,12 @@ sub send_emails {
 
     # Return result
     # $json_response->{result};
+}
+# Retrieve list of emails
+sub retrieve_emails {
+    my ($this) = @_;
+    my $email_list = $this->make_request("https://api.sendpulse.com/smtp/emails/total");
+    return 42;
 }
 
 1;
