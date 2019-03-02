@@ -91,27 +91,13 @@ sub request_token {
 sub send_emails {
     my ($this, %email_data) = @_;
 
-    # Make sure the required keys are in the hash
-    return json_encode({
-            "error" => 1,
-            "message" => "Mising key",
-        }) unless grep (/(html|text|subject|from|go)/o, keys %email_data);
-
-    # Turn html into base64 string
-    # $email_data{"html"} = encode_base64($email_data{"html"});
-
-    #    my $json_response = $this->make_request("https://api.sendpulse.com/smtp/emails", [
-    #        "email" => encode_json(\%email_data)
-    #    ]);
-
+    # HTML has to be base64 encoded
+    $email_data{"html"} = encode_base64($email_data{"html"});
+    my $json_response = $this->make_request("https://api.sendpulse.com/smtp/emails", [
+            "email" => encode_json(\%email_data)
+        ]);
     # Return result
-    # $json_response->{result};
-}
-# Retrieve list of emails
-sub retrieve_emails {
-    my ($this) = @_;
-    my $email_list = $this->make_request("https://api.sendpulse.com/smtp/emails/total");
-    return 42;
+    return $json_response->{result};
 }
 
 1;
