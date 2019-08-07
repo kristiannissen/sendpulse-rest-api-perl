@@ -10,8 +10,8 @@ use FindBin qw($Bin);
 use lib "$Bin/../";
 
 use Test::More tests => 7;
-use Test::Output;
-use Test::Exception;
+# use Test::Output;
+# use Test::Exception;
 
 use Data::Dumper;
 
@@ -67,7 +67,7 @@ my %email_data = (
     },
     "to" => [
         {"email" => 'kristian.nissen@gmail.com',},
-        {"email" => 'kn@unisport.dk'}
+        {"email" => 'kristian.nissen@gmail.com'}
     ]
 );
 

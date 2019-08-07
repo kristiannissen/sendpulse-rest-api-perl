@@ -8,11 +8,9 @@ use HTTP::Request::Common qw(GET POST);
 use LWP;
 use JSON;
 use MIME::Base64;
-use Log::Log4perl qw(:easy);
-
-use Data::Dumper;
-
-Log::Log4perl->easy_init($DEBUG);
+# use Log::Log4perl qw(:easy);
+# use Data::Dumper;
+# Log::Log4perl->easy_init($DEBUG);
 
 sub new {
     my ($class, %args) = @_;
@@ -61,6 +59,7 @@ sub make_request {
     ) if ($this->{token});
 
     my $response = $this->{ua}->request($request);
+    # DEBUG $response->content;
     my $json_response = decode_json($response->content);
 
     $json_response->{http_status_code} = $response->code;
@@ -97,6 +96,7 @@ sub send_emails {
             "email" => encode_json(\%email_data)
         ]);
     # Return result
+    # DEBUG $json_response->{result};
     return $json_response->{result};
 }
 
