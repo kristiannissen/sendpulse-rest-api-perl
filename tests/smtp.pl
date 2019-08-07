@@ -9,7 +9,7 @@ use Carp qw(carp croak);
 use FindBin qw($Bin);
 use lib "$Bin/../";
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 # use Test::Output;
 # use Test::Exception;
 
@@ -67,10 +67,13 @@ my %email_data = (
     },
     "to" => [
         {"email" => 'kristian.nissen@gmail.com',},
-        {"email" => 'kristian.nissen@gmail.com'}
+        {"email" => 'test-z2dnu@mail-tester.com '}
     ]
 );
 
 ok ($api->send_emails(%email_data) eq 1, "Email data succes");
+
+# Test number of emails send
+ok($api->total_emails_sent() gt 0, "Send more than 0 emails");
 
 # Done testing

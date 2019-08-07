@@ -8,9 +8,10 @@ use HTTP::Request::Common qw(GET POST);
 use LWP;
 use JSON;
 use MIME::Base64;
-# use Log::Log4perl qw(:easy);
-# use Data::Dumper;
-# Log::Log4perl->easy_init($DEBUG);
+use Log::Log4perl qw(:easy);
+use Data::Dumper;
+
+Log::Log4perl->easy_init($DEBUG);
 
 sub new {
     my ($class, %args) = @_;
@@ -98,6 +99,18 @@ sub send_emails {
     # Return result
     # DEBUG $json_response->{result};
     return $json_response->{result};
+}
+# Retrieve total amount of sent emails
+sub total_emails_sent {
+    my ($this) = @_;
+    my $request = GET "https://api.sendpulse.com/smtp/emails/total";
+    $request->header("Authorization" => 
+        $this->{token_type} ." ". $this->{token}
+    ) if ($this->{token});
+    my $response = $this->{ua}->request($request);
+    my $json_response = decode_json($response->content);
+    # DEBUG Dumper $json_response;
+    return $json_response->{total};
 }
 
 1;
