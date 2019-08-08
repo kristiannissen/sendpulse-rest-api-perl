@@ -48,8 +48,8 @@ sub client_secret {
     }
 }
 # Make request to the API endpoint
-# this->make_request(URL, []);
-sub make_request {
+# this->make_post_request(URL, []);
+sub make_post_request {
     my ($this, $url, @params) = @_;
 
     my $request = POST $url, @params;
@@ -60,7 +60,6 @@ sub make_request {
     ) if ($this->{token});
 
     my $response = $this->{ua}->request($request);
-    # DEBUG $response->content;
     my $json_response = decode_json($response->content);
 
     $json_response->{http_status_code} = $response->code;
@@ -73,7 +72,7 @@ sub make_request {
 sub request_token {
     my ($this) = @_;
 
-    my $json_auth = $this->make_request("https://api.sendpulse.com/oauth/access_token", [
+    my $json_auth = $this->make_post_request("https://api.sendpulse.com/oauth/access_token", [
         "grant_type" => $this->{grant_type},
         "client_id" => $this->{client_id},
         "client_secret" => $this->{client_secret}
@@ -93,7 +92,7 @@ sub send_emails {
 
     # HTML has to be base64 encoded
     $email_data{"html"} = encode_base64($email_data{"html"});
-    my $json_response = $this->make_request("https://api.sendpulse.com/smtp/emails", [
+    my $json_response = $this->make_post_request("https://api.sendpulse.com/smtp/emails", [
             "email" => encode_json(\%email_data)
         ]);
     
