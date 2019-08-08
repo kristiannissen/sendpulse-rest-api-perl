@@ -96,9 +96,9 @@ sub send_emails {
     my $json_response = $this->make_request("https://api.sendpulse.com/smtp/emails", [
             "email" => encode_json(\%email_data)
         ]);
+    
     # Return result
-    # DEBUG $json_response->{result};
-    return $json_response->{result};
+    return ($json_response->{result}, $this->total_emails_sent());
 }
 # Retrieve total amount of sent emails
 sub total_emails_sent {
@@ -109,7 +109,7 @@ sub total_emails_sent {
     ) if ($this->{token});
     my $response = $this->{ua}->request($request);
     my $json_response = decode_json($response->content);
-    # DEBUG Dumper $json_response;
+    
     return $json_response->{total};
 }
 

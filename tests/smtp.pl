@@ -9,16 +9,17 @@ use Carp qw(carp croak);
 use FindBin qw($Bin);
 use lib "$Bin/../";
 
-use Test::More tests => 8;
-# use Test::Output;
-# use Test::Exception;
+use Test::More;
+
+use Log::Log4perl qw(:easy);
+Log::Log4perl->easy_init($DEBUG);
 
 use Data::Dumper;
 
 use SendPulse::RestApi;
 
 # Accept id and secret
-my ($client_id, $client_secret) = @ARGV;
+my ($client_id, $client_secret, $sender, $receiver) = @ARGV;
 
 my $api = SendPulse::RestApi->new(
         client_secret => $client_secret,
@@ -63,17 +64,19 @@ my %email_data = (
     "subject" => "Hello from the Kitty",
     "from" => {
         "name" => "Hello Kitty",
-        "email" => 'formand@espegaarden.dk'
+        "email" => $sender
     },
     "to" => [
-        {"email" => 'kristian.nissen@gmail.com',},
-        {"email" => 'test-z2dnu@mail-tester.com '}
+        {"email" => $receiver}
     ]
 );
 
-ok ($api->send_emails(%email_data) eq 1, "Email data succes");
+my ($result, $mails_sent) = $api->send_emails(%email_data);
+ok ($result eq 1, "Email was sent");
+ok ($mails_sent gt 0, "Sent more than 0 emails");
 
 # Test number of emails send
-ok($api->total_emails_sent() gt 0, "Send more than 0 emails");
+ok($api->total_emails_sent() gt 0, "Number of emails sent is higher than 0");
 
 # Done testing
+done_testing(plan());
