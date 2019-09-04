@@ -36,4 +36,8 @@ ok ($code eq 400, "Test bad request code");
 ok (exists($response->{'error'}), "Test bad request response");
 
 ## TODO test that the request_token works
+my ($code, $response) = $api->request_access_token();
+
+ok ($code eq 200, "Test getting a request token");
+## Done testing
 done_testing(plan());
