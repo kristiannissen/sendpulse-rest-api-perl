@@ -32,14 +32,15 @@ sub new {
 }
 # Get request method
 sub make_get_request {
-    my ($this, $url, @params, @header) = @_;
+    my $this = shift;
 
-    my $req = GET $url, @params;
-    $req->header(\@header);
+    croak('Croaking...') unless @_;
 
-    my $res = $this->{ua}->request($req);
+    my $url = shift;
+    my %args = @_;
+    DEBUG Dumper (keys %args);
 
-    return ($res->code, decode_json($res->content));
+    return (100, "");
 }
 ## Post request method
 sub make_post_request {
