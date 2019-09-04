@@ -32,10 +32,10 @@ sub new {
 }
 # Get request method
 sub make_get_request {
-    my ($this, $header, $url, @params) = @_;
+    my ($this, $url, @params, @header) = @_;
 
     my $req = GET $url, @params;
-    $req->header($header);
+    $req->header(\@header);
 
     my $res = $this->{ua}->request($req);
 
@@ -43,10 +43,10 @@ sub make_get_request {
 }
 ## Post request method
 sub make_post_request {
-    my ($this, $header, $url, @params) = @_;
+    my ($this, $url, @params, @header) = @_;
 
     my $req = POST $url, @params;
-    $req->header($header);
+    $req->header(\@header);
 
     my $res = $this->{ua}->request($req);
 
@@ -57,7 +57,6 @@ sub request_access_token {
     my ($this) = @_;
 
     my ($code, $res) = $this->make_post_request(
-        {},
         "https://api.sendpulse.com/oauth/access_token",
         ["grant_type" => $this->{grant_type},
             "client_id" => $this->{client_id},
@@ -72,6 +71,21 @@ sub request_access_token {
     $this->{expires} = $res->{expires};
 
     return ($code, {'message' => 'OK'});
+}
+## Retrieving total amount of sent emails
+sub get_total_emails_sent {
+    my ($this) = @_;
+
+    my ($code, $res) = $this->make_get_request(
+        "https://api.sendpulse.com/smtp/emails/total",
+        [],
+        [Authorization =>
+            $this->{token_type} ." ". $this->{token}]
+    );
+    ## Check the status code
+    return ($code, $res) if $code ne 200;
+
+    return (100, "Hello");
 }
 
 1;
