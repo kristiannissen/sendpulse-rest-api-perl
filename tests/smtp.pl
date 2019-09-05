@@ -29,15 +29,15 @@ my $api = SendPulse::RestApi->new(
 ## TODO test make_get_request works
 my ($code, $response) = $api->make_get_request(
     "https://api.sendpulse.com/smtp/emails/total",
-    foo => 'bar', baz => 'disco',
-    Authorization => "hello kitty"
+    [],
+    [Authorization => "hello kitty"]
 );
 ok ($code eq 400, "Test bad request code");
 
 ## TODO test that the request_token works
-# ($code, $response) = $api->request_access_token();
+($code, $response) = $api->request_access_token();
 
-# ok ($code eq 200, "Test getting a request token");
+ok ($code eq 200, "Test getting a request token");
 
 ## TODO test total emails sent
 # my ($code, $response) = $api->get_total_emails_sent();

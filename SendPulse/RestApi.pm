@@ -37,8 +37,12 @@ sub make_get_request {
     croak('Croaking...') unless @_;
 
     my $url = shift;
-    my %args = @_;
-    DEBUG Dumper (keys %args);
+    my $params = shift;
+    my $header = shift;
+
+    my $req = GET $url, $header, $params;
+    my $res = $this->{ua}->request($req);
+    DEBUG Dumper($res);
 
     return (100, "");
 }
