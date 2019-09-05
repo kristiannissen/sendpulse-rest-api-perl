@@ -21,27 +21,19 @@ use SendPulse::RestApi;
 # Accept id and secret
 my ($client_id, $client_secret, $sender, $receiver) = @ARGV;
 
-my $api = SendPulse::RestApi->new(
-        client_secret => $client_secret,
-        client_id => $client_id
-    );
+# Test class
+my $api = SendPulse::RestApi->new();
+isa_ok (ref($api), 'SendPulse::RestApi', 'Class setup');
 
-## TODO test make_get_request works
-my ($code, $response) = $api->make_get_request(
-    "https://api.sendpulse.com/smtp/emails/total",
-    [],
-    [Authorization => "hello kitty"]
-);
-ok ($code eq 400, "Test bad request code");
+# Test getters/setters
+$api->set_client_secret($client_secret);
+ok ($api->get_client_secret eq $client_secret, 'Changing client secret');
 
-## TODO test that the request_token works
-($code, $response) = $api->request_access_token();
+$api->set_client_id($client_id);
+ok ($api->get_client_id eq $client_id, 'Changing client id');
 
-ok ($code eq 200, "Test getting a request token");
+# Test getting a request token
+like ($api->get_request_token, qr/\S{0,}/, 'Test token');
 
-## TODO test total emails sent
-# my ($code, $response) = $api->get_total_emails_sent();
-# ok ($code eq 200, "Test getting total emails sent");
-
-## Done testing
+# We are done testing
 done_testing(plan());
