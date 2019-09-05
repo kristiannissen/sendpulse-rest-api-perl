@@ -52,11 +52,33 @@ sub get_request_token {
             client_secret => $self->{_client_secret}]
     );
     return ($code, $resp) if exists($resp->{error});
-
-    $self->{_token} = $resp->{token};
+    
+    $self->{_token} = $resp->{access_token};
     $self->{_token_type} = $resp->{token_type};
 
     return;
+}
+sub get_total_emails_sent {
+    my $self = shift;
+
+    my ($code, $res) = $self->_get_request("https://api.sendpulse.com/smtp/emails/total",
+        [Authorization => "Bearer $self->{_token}"]
+    );
+    DEBUG Dumper($res);
+}
+# Get request
+sub _get_request {
+    my ($self, $url, $header, $params) = @_;
+
+    use HTTP::Request::Common;
+    use LWP;
+
+    my $ua = LWP::UserAgent->new;
+    my $req = HTTP::Request::Common::GET($url, $params);
+    $req->header($header);
+    my $res = $ua->request($req);
+
+    return ($res->code, decode_json($res->content));
 }
 # Post request
 sub _post_request {

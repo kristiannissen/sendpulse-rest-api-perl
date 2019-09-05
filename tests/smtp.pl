@@ -33,7 +33,10 @@ $api->set_client_id($client_id);
 ok ($api->get_client_id eq $client_id, 'Changing client id');
 
 # Test getting a request token
-like ($api->get_request_token, qr/\S{0,}/, 'Test token');
+like ($api->get_request_token, qr/\S{1,}/, 'Test token');
+
+# Test total emails sent
+like ($api->get_total_emails_sent, qr/\d{1,}/, 'Test total emails sent');
 
 # We are done testing
 done_testing(plan());
