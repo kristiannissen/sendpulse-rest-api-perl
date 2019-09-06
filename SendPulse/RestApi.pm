@@ -69,16 +69,15 @@ sub get_total_emails_sent {
 # Get request
 sub _get_request {
     my ($self, $url, $header, $params) = @_;
-
     use HTTP::Request::Common;
     use LWP;
 
-    my $ua = LWP::UserAgent->new;
-    my $req = HTTP::Request::Common::GET($url, $params);
-    $req->header($header);
-    my $res = $ua->request($req);
+    # my $ua = LWP::UserAgent->new;
+    # my $req = HTTP::Request::Common::GET($url, ($params ? $params : []));
+    # $req->header(Authorization => "Bearer $self->{_token}");
+    # my $res = $ua->request($req);
 
-    return ($res->code, decode_json($res->content));
+    # return ($res->code, $res);
 }
 # Post request
 sub _post_request {
