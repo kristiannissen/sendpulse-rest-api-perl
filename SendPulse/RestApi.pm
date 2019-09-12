@@ -3,7 +3,6 @@ package SendPulse::RestApi;
 use strict;
 use warnings;
 use 5.10.0;
-use Carp qw(carp croak); # https://perldoc.perl.org/Carp.html
 use HTTP::Request::Common;
 use LWP;
 use JSON;
@@ -56,7 +55,7 @@ sub get_request_token {
     $self->{_token} = $resp->{access_token};
     $self->{_token_type} = $resp->{token_type};
 
-    return;
+    return $self->{_token};;
 }
 sub get_total_emails_sent {
     my $self = shift;
