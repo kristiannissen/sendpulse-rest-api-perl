@@ -16,27 +16,17 @@ Log::Log4perl->easy_init($DEBUG);
 
 use Data::Dumper;
 
-use SendPulse::RestApi;
+use SendPulse::SMTP;
 
 # Accept id and secret
 my ($client_id, $client_secret, $sender, $receiver) = @ARGV;
 
 # Test class
-my $api = SendPulse::RestApi->new();
-isa_ok (ref($api), 'SendPulse::RestApi', 'Class setup');
+my $smtp = SendPulse::SMTP->new();
+isa_ok (ref($smtp), 'SendPulse::SMTP', 'Class setup');
 
-# Test getters/setters
-$api->set_client_secret($client_secret);
-ok ($api->get_client_secret eq $client_secret, 'Changing client secret');
-
-$api->set_client_id($client_id);
-ok ($api->get_client_id eq $client_id, 'Changing client id');
-
-# Test getting a request token
-like ($api->get_request_token, qr/\S{1,}/, 'Test token');
-
-# Test total emails sent
-like ($api->get_total_emails_sent, qr/\d{1,}/, 'Test total emails sent');
+# Test empty attributes
+ok ($smtp->client_secret eq '', 'Empty attribute');
 
 # We are done testing
 done_testing(plan());
