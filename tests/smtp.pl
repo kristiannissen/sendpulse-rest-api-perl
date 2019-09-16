@@ -28,5 +28,16 @@ isa_ok (ref($smtp), 'SendPulse::SMTP', 'Class setup');
 # Test empty attributes
 ok ($smtp->client_secret eq '', 'Empty attribute');
 
+# Test setting attribute
+$smtp->client_secret($client_secret);
+ok ($smtp->client_secret eq $client_secret, 'Setter/Getter test');
+
+# Test access token
+$smtp->client_id($client_id);
+like ($smtp->get_access_token, qr/\w+/, 'Test access token');
+
+# Test total emails sent
+# like ($smtp->total_emails_sent, qr/\d+/, 'Test total emails sent');
+
 # We are done testing
 done_testing(plan());
