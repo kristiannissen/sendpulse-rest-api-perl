@@ -83,7 +83,7 @@ sub _request {
     my $ua = LWP::UserAgent->new;
     my $res = $ua->request($req);
 
-    DEBUG Dumper($res->content);
+    DEBUG Dumper($res);
     return ($res->code, $res->content);
 }
 # Print class state
